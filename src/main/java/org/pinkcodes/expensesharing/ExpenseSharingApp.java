@@ -1,8 +1,8 @@
-package org.example;
+package org.pinkcodes.expensesharing;
 
 
 
-import org.example.model.User;
+import org.pinkcodes.expensesharing.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;

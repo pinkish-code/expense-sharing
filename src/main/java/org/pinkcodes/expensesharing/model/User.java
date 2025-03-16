@@ -1,4 +1,4 @@
-package org.example.model;
+package org.pinkcodes.expensesharing.model;
 
 public class User {
 
