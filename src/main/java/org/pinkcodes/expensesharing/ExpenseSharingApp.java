@@ -1,32 +1,34 @@
 package org.pinkcodes.expensesharing;
-
-
-
 import org.pinkcodes.expensesharing.model.ExpenseSharingBalanceOutput;
 import org.pinkcodes.expensesharing.model.ExpenseSharingInput;
 import org.pinkcodes.expensesharing.model.User;
+import org.pinkcodes.expensesharing.model.UserBalance;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExpenseSharingApp {
 
 
-    List<User> users = new ArrayList<User>();
     Map<String, Double> userBalance = new HashMap<>();
 
 
+    public List<UserBalance> processCommand(ExpenseSharingInput input) {
 
-    public ExpenseSharingBalanceOutput processCommand(ExpenseSharingInput input) {
+        List<UserBalance> userlist;
+
         if (input.getExpenseSharingCommand().equals("EXPENSE")) {
             addExpense(input.getPaidBy(), input.getAmountPaid(),input.getNumberOfUsers(), input.getUserIds(), input.getSplitType(), input.getValues());
-            return new ExpenseSharingBalanceOutput("Expense added successfully.");
+            userlist=showBalances();
+            return userlist;
         } else if (input.getExpenseSharingCommand().equals("SHOW")) {
-            return new ExpenseSharingBalanceOutput(showBalances());
+            userlist=showBalances();
+            return userlist;
         }
-        return new ExpenseSharingBalanceOutput("Invalid command.");
+
+         else{
+            System.out.println("Invalid command.");
+             return Collections.emptyList();
+        }
     }
 
     public void addExpense(String payerId, double amount, int numUsers, List<String> userIds, String type, List<Double> values) {
@@ -40,8 +42,9 @@ public class ExpenseSharingApp {
             for (String x : userIds) {
                 if (!x.equals(payerId))
                     // userBalance.put(x, userBalance.get(x)+share);
-                    userBalance.put(x, userBalance.getOrDefault(x ,0.0)+ share);
+                   userBalance.put(x, userBalance.getOrDefault(x ,0.0)+ share);
 
+                   // userBalance.add(new UserBalance(x, u.getAmount()));
             }
 
             userBalance.put(payerId,userBalance.getOrDefault(payerId,0.0)+ share - amount);
@@ -82,16 +85,19 @@ public class ExpenseSharingApp {
             }
 
 
-            userBalance.put(payerId, userBalance.getOrDefault(payerId,0.0)+ (totalShare-amount));
+            userBalance.put(payerId, userBalance.getOrDefault(payerId,0.0)+ (-totalShare));
         }
 
 
     }
 
-    public String showBalances() {
-        if (userBalance.isEmpty()) {
-            return "No balances";
-        }
+    public List<UserBalance> showBalances() {
+       /* if (userBalance.isEmpty()) {
+            //return new ArrayList<>();
+        }*/
+
+
+        List<UserBalance> ublist = new ArrayList<>();
 
         StringBuilder result = new StringBuilder();
 
@@ -99,14 +105,13 @@ public class ExpenseSharingApp {
             String userId = entry.getKey();
             Double balance = entry.getValue();
 
-            if (balance < 0) {
-                result.append(userId).append(" is owed ").append(-balance).append("\n");
-            } else if (balance > 0) {
-                result.append(userId).append(" owes ").append(balance).append("\n");
-            }
+            ublist.add(new UserBalance(userId, balance));
+            //return result.isEmpty() ? "No balances" : result.toString().trim();
         }
 
-        return result.isEmpty() ? "No balances" : result.toString().trim();
+        return ublist;
+       // ExpenseSharingBalanceOutput exp=new ExpenseSharingBalanceOutput();
+      //  ExpenseSharingBalanceOutput.printOutput(ublist);
     }
 
 }
