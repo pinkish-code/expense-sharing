@@ -2,6 +2,8 @@ package org.pinkcodes.expensesharing;
 
 
 
+import org.pinkcodes.expensesharing.model.ExpenseSharingBalanceOutput;
+import org.pinkcodes.expensesharing.model.ExpenseSharingInput;
 import org.pinkcodes.expensesharing.model.User;
 
 import java.util.ArrayList;
@@ -15,12 +17,17 @@ public class ExpenseSharingApp {
     List<User> users = new ArrayList<User>();
     Map<String, Double> userBalance = new HashMap<>();
 
-   /* String addUser(String name, String email, String mobile) {
-        String userId = UUID.randomUUID().toString(); // Generate unique ID
-        users.add(new User(name, email, mobile));
-        userBalance.put(userId, 0.0);
-        return userId;
-    }*/
+
+
+    public ExpenseSharingBalanceOutput processCommand(ExpenseSharingInput input) {
+        if (input.getExpenseSharingCommand().equals("EXPENSE")) {
+            addExpense(input.getPaidBy(), input.getAmountPaid(),input.getNumberOfUsers(), input.getUserIds(), input.getSplitType(), input.getValues());
+            return new ExpenseSharingBalanceOutput("Expense added successfully.");
+        } else if (input.getExpenseSharingCommand().equals("SHOW")) {
+            return new ExpenseSharingBalanceOutput(showBalances());
+        }
+        return new ExpenseSharingBalanceOutput("Invalid command.");
+    }
 
     public void addExpense(String payerId, double amount, int numUsers, List<String> userIds, String type, List<Double> values) {
 
@@ -81,22 +88,25 @@ public class ExpenseSharingApp {
 
     }
 
-    public void showBalances() {
+    public String showBalances() {
+        if (userBalance.isEmpty()) {
+            return "No balances";
+        }
+
+        StringBuilder result = new StringBuilder();
 
         for (Map.Entry<String, Double> entry : userBalance.entrySet()) {
             String userId = entry.getKey();
             Double balance = entry.getValue();
 
             if (balance < 0) {
-                System.out.println(userId + "is owed" + balance);
-            } else if (balance > 0)
-                System.out.println(userId + "owes" + balance);
-
-            else
-                System.out.println("No balances");
-
-
+                result.append(userId).append(" is owed ").append(-balance).append("\n");
+            } else if (balance > 0) {
+                result.append(userId).append(" owes ").append(balance).append("\n");
+            }
         }
 
+        return result.isEmpty() ? "No balances" : result.toString().trim();
     }
+
 }
