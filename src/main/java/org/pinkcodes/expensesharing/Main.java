@@ -17,19 +17,24 @@ public class Main {
         ExpenseSharingApp app = new ExpenseSharingApp();
 
         Scanner scanner = new Scanner(in);
+        while(scanner.hasNext()) {
 
-        try {
-            ExpenseSharingInput input = ExpenseSharingInput.parse(scanner.nextLine());
 
-            //ExpenseSharingBalanceOutput output = app.processCommand(input); // Process command
-            // System.out.println(output.format()); // Print formatted output
+            try {
+                String s1= scanner.nextLine();
+                if(s1.equalsIgnoreCase("Exit"))
+                    break;
+                ExpenseSharingInput input = ExpenseSharingInput.parse(s1);
 
-            List<UserBalance> list = app.processCommand(input);
-            ExpenseSharingBalanceOutput.printOutput(list);
-        } catch (IllegalArgumentException e){
-            System.out.println(e.getMessage());
+                //ExpenseSharingBalanceOutput output = app.processCommand(input); // Process command
+                // System.out.println(output.format()); // Print formatted output
+
+                List<UserBalance> list = app.processCommand(input);
+                ExpenseSharingBalanceOutput.printOutput(list);
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
         }
-
 
     }
 
