@@ -45,7 +45,8 @@ public class ExpenseSharingInput {
         } else if (parts[0].equals("SHOW")) {
             return new ExpenseSharingInput("SHOW", parts.length > 1 ? parts[1] : null, 0, 0, null, null, null);
         }
-        throw new IllegalArgumentException("Invalid command format");
+        else
+            throw new IllegalArgumentException("Invalid command format");
     }
 
     // Getters

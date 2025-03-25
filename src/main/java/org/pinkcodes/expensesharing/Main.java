@@ -1,5 +1,6 @@
 package org.pinkcodes.expensesharing;
 
+import org.pinkcodes.expensesharing.controller.ExpenseSharingAppConsoleController;
 import org.pinkcodes.expensesharing.model.ExpenseSharingBalanceOutput;
 import org.pinkcodes.expensesharing.model.ExpenseSharingInput;
 import org.pinkcodes.expensesharing.model.UserBalance;
@@ -17,6 +18,7 @@ public class Main {
         ExpenseSharingApp app = new ExpenseSharingApp();
 
         Scanner scanner = new Scanner(in);
+
         while(scanner.hasNext()) {
 
 
@@ -26,11 +28,10 @@ public class Main {
                     break;
                 ExpenseSharingInput input = ExpenseSharingInput.parse(s1);
 
-                //ExpenseSharingBalanceOutput output = app.processCommand(input); // Process command
-                // System.out.println(output.format()); // Print formatted output
-
-                List<UserBalance> list = app.processCommand(input);
+                ExpenseSharingAppConsoleController ec=new ExpenseSharingAppConsoleController();
+                List<UserBalance> list = ec.processCommand(input);
                 ExpenseSharingBalanceOutput.printOutput(list);
+
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
