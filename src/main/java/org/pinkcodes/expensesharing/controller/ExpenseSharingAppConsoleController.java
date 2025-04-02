@@ -1,34 +1,65 @@
 package org.pinkcodes.expensesharing.controller;
+import org.pinkcodes.expensesharing.model.*;
 
-import org.pinkcodes.expensesharing.ExpenseSharingApp;
-import org.pinkcodes.expensesharing.model.ExpenseSharingInput;
-import org.pinkcodes.expensesharing.model.UserBalance;
-
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+
+/**
+ * It acts as in interface between user and application
+ */
 public class ExpenseSharingAppConsoleController {
 
-    ExpenseSharingApp app=new ExpenseSharingApp();
 
-    public List<UserBalance> processCommand(ExpenseSharingInput input) {
+    public ExpenseSharingInput processUserInput(String command) {
+        String[] parts = command.split(" ");
+        List<String> userIds = new ArrayList<>();
+        String splitType;
+        List<Double> values = new ArrayList<>();
 
-        List<UserBalance> userlist;
 
-        if (input.getExpenseSharingCommand().equals("EXPENSE")) {
-           app.addExpense(input.getPaidBy(), input.getAmountPaid(),input.getNumberOfUsers(), input.getUserIds(), input.getSplitType(), input.getValues());
-            userlist=app.showBalances();
-            return userlist;
-        } else if (input.getExpenseSharingCommand().equals("SHOW")) {
-            userlist=app.showBalances();
-            return userlist;
-        }
+        if (parts[0].equals("EXPENSE")) {
+            String paidBy = parts[1];
+            double amountPaid = Double.parseDouble(parts[2]);
+            int numOfUsers = Integer.parseInt(parts[3]);
 
-        else{
-            System.out.println("Invalid command.");
-            return Collections.emptyList();
+            for (int i = 0; i < numOfUsers; i++) {
+                userIds.add(parts[4 + i]);
+            }
+            splitType = parts[4 + numOfUsers];
+
+            for (int i = 5 + numOfUsers; i < parts.length; i++) {
+                values.add(Double.parseDouble(parts[i]));
+            }
+            Expense expense = new Expense(paidBy, amountPaid, numOfUsers, userIds, splitType, values);
+            return new ExpenseSharingInput(ExpenseSharingCommand.EXPENSE, expense);
+        } else if (parts[0].equals("SHOW")) {
+            if (parts.length > 1) {
+                return new ExpenseSharingInput(ExpenseSharingCommand.SHOW_BALANCE, parts[1]);
+            } else {
+                return new ExpenseSharingInput(ExpenseSharingCommand.SHOW_BALANCE_FOR_A_USER);
+            }
+
+        } else {
+            throw new IllegalArgumentException("Invalid command format");
         }
     }
+
+    public String createOutput(ExpenseSharingBalanceOutput expenseSharingBalanceOutput) {
+        if (expenseSharingBalanceOutput.getUserBalances() == null) {
+            return "";
+        }
+        StringBuilder output = new StringBuilder();
+        for(UserBalance userBalance:expenseSharingBalanceOutput.getUserBalances()){
+            if(userBalance.getAmount() < 0) {
+                output.append(userBalance.getUserId()).append("is owed ").append(userBalance.getAmount()).append("\n");
+            }
+            else {
+                output.append(userBalance.getUserId()).append("owes ").append(userBalance.getAmount()).append("\n");
+            }
+        }
+        return output.toString();
+    }
+
+
 }
