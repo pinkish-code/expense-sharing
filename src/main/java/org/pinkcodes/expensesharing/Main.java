@@ -1,8 +1,8 @@
 package org.pinkcodes.expensesharing;
 
-import org.pinkcodes.expensesharing.model.ExpenseSharingBalanceOutput;
-import org.pinkcodes.expensesharing.model.ExpenseSharingInput;
-import org.pinkcodes.expensesharing.model.UserBalance;
+import org.pinkcodes.expensesharing.controller.ExpenseSharingAppConsoleController;
+import org.pinkcodes.expensesharing.model.*;
+import org.pinkcodes.expensesharing.application.ExpenseSharingApp;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,23 +14,36 @@ public class Main {
 
     public static void main(String[] args) {
 
-        ExpenseSharingApp app = new ExpenseSharingApp();
+        ExpenseSharingApp expenseSharingApp = new ExpenseSharingApp();
+        ExpenseSharingAppConsoleController expenseSharingAppConsoleController =
+                new ExpenseSharingAppConsoleController();
 
         Scanner scanner = new Scanner(in);
+
         while(scanner.hasNext()) {
 
 
             try {
-                String s1= scanner.nextLine();
-                if(s1.equalsIgnoreCase("Exit"))
+                String userInput = scanner.nextLine();
+                if(userInput.equalsIgnoreCase("Exit"))
                     break;
-                ExpenseSharingInput input = ExpenseSharingInput.parse(s1);
-
-                //ExpenseSharingBalanceOutput output = app.processCommand(input); // Process command
-                // System.out.println(output.format()); // Print formatted output
-
-                List<UserBalance> list = app.processCommand(input);
-                ExpenseSharingBalanceOutput.printOutput(list);
+                ExpenseSharingInput expenseSharingInput = expenseSharingAppConsoleController.processUserInput(userInput);
+                List<UserBalance> userBalances;
+                ExpenseSharingBalanceOutput expenseSharingBalanceOutput;
+                String output = "";
+                switch (expenseSharingInput.getCommand()) {
+                    case EXPENSE:
+                         userBalances = expenseSharingApp.addExpense(expenseSharingInput.getExpense());
+                        expenseSharingBalanceOutput = new ExpenseSharingBalanceOutput(userBalances);
+                        output = expenseSharingAppConsoleController.createOutput(expenseSharingBalanceOutput);
+                        break;
+                    case SHOW_BALANCE, SHOW_BALANCE_FOR_A_USER:
+                        userBalances = expenseSharingApp.showBalances();
+                        expenseSharingBalanceOutput = new ExpenseSharingBalanceOutput(userBalances);
+                        output = expenseSharingAppConsoleController.createOutput(expenseSharingBalanceOutput);
+                        break;
+                }
+                System.out.println(output);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
