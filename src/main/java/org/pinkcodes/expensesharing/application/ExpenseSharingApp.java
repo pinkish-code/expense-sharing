@@ -10,7 +10,7 @@ public class ExpenseSharingApp {
 
     Map<String, Double> userBalanceMap = new HashMap<>();
 
-    public  List<UserBalance> addExpense(Expense expense) {
+    public List<UserBalance> addExpense(Expense expense) {
         SplitType splitType = SplitType.valueOf(expense.getSplitType().toUpperCase());
 
         switch (splitType) {
@@ -71,34 +71,33 @@ public class ExpenseSharingApp {
         }
     }
 
-        public void addExpenseForPercentSplitType(Expense expense){
+    public void addExpenseForPercentSplitType(Expense expense) {
 
         //u1 1000 u1 u2 u3  40 40 20
 
-            double paidByUserShare=0.0;
-            for (int index = 0; index < expense.getUserIds().size(); index++) {
-                String userId = expense.getUserIds().get(index);
+        double paidByUserShare = 0.0;
+        for (int index = 0; index < expense.getUserIds().size(); index++) {
+            String userId = expense.getUserIds().get(index);
 
-                //ignore paidBy userid
-                if (expense.getUserIds().get(index).equals(expense.getPaidBy())) {
-                    paidByUserShare=expense.getValues().get(index)* expense.getAmountPaid()/100;
+            //ignore paidBy userid
+            if (expense.getUserIds().get(index).equals(expense.getPaidBy())) {
+                paidByUserShare = expense.getValues().get(index) * expense.getAmountPaid() / 100;
 
-                } else {
-                      double existingUserBalance=userBalanceMap.getOrDefault(userId,0.0);
-                      userBalanceMap.put(userId,existingUserBalance+expense.getValues().get(index)* expense.getAmountPaid()/100 );
-                }
-
+            } else {
+                double existingUserBalance = userBalanceMap.getOrDefault(userId, 0.0);
+                userBalanceMap.put(userId, existingUserBalance + expense.getValues().get(index) * expense.getAmountPaid() / 100);
             }
-            double paidByUserExistingBalance=userBalanceMap.getOrDefault(expense.getPaidBy(), 0.0);
-            userBalanceMap.put(expense.getPaidBy(),paidByUserExistingBalance+paidByUserShare);
 
         }
+        double paidByUserExistingBalance = userBalanceMap.getOrDefault(expense.getPaidBy(), 0.0);
+        userBalanceMap.put(expense.getPaidBy(), paidByUserExistingBalance + paidByUserShare);
+
+    }
 
     public List<UserBalance> showBalances() {
 
         List<UserBalance> ublist = new ArrayList<>();
 
-        StringBuilder result = new StringBuilder();
 
         for (Map.Entry<String, Double> entry : userBalanceMap.entrySet()) {
             String userId = entry.getKey();
@@ -111,4 +110,22 @@ public class ExpenseSharingApp {
 
     }
 
-}
+    public List<UserBalance> showBalancesForAUser(String userId) {
+
+        List<UserBalance> ublist = new ArrayList<>();
+
+        for (Map.Entry<String, Double> entry : userBalanceMap.entrySet()) {
+
+            if (entry.getKey().equals(userId)) {
+                Double balance = entry.getValue();
+                ublist.add(new UserBalance(userId, balance));
+                break;
+            }
+
+
+        }
+        return ublist;
+    }
+    }
+
+
