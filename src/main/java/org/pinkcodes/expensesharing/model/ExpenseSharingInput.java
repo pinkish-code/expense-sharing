@@ -30,7 +30,7 @@ public class ExpenseSharingInput {
         return expense;
     }
 
-    public Optional<String> getUserId() {
-        return Optional.ofNullable(userId);
+    public String getUserId() {
+        return userId;
     }
 }

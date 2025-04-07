@@ -5,6 +5,7 @@ import org.pinkcodes.expensesharing.model.*;
 import org.pinkcodes.expensesharing.application.ExpenseSharingApp;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static java.lang.System.in;
@@ -37,11 +38,15 @@ public class Main {
                         expenseSharingBalanceOutput = new ExpenseSharingBalanceOutput(userBalances);
                         output = expenseSharingAppConsoleController.createOutput(expenseSharingBalanceOutput);
                         break;
-                    case SHOW_BALANCE, SHOW_BALANCE_FOR_A_USER:
+                    case SHOW_BALANCE:
                         userBalances = expenseSharingApp.showBalances();
                         expenseSharingBalanceOutput = new ExpenseSharingBalanceOutput(userBalances);
                         output = expenseSharingAppConsoleController.createOutput(expenseSharingBalanceOutput);
                         break;
+                    case SHOW_BALANCE_FOR_A_USER:
+                        userBalances=expenseSharingApp.showBalancesForAUser(expenseSharingInput.getUserId());
+                        expenseSharingBalanceOutput = new ExpenseSharingBalanceOutput(userBalances);
+                        output = expenseSharingAppConsoleController.createOutput(expenseSharingBalanceOutput);
                 }
                 System.out.println(output);
             } catch (IllegalArgumentException e) {
