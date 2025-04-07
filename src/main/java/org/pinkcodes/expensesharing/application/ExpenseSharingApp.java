@@ -1,5 +1,6 @@
 package org.pinkcodes.expensesharing.application;
 import org.pinkcodes.expensesharing.model.Expense;
+import org.pinkcodes.expensesharing.model.SplitType;
 import org.pinkcodes.expensesharing.model.UserBalance;
 
 import java.util.*;
@@ -10,16 +11,16 @@ public class ExpenseSharingApp {
     Map<String, Double> userBalanceMap = new HashMap<>();
 
     public  List<UserBalance> addExpense(Expense expense) {
+        SplitType splitType = SplitType.valueOf(expense.getSplitType().toUpperCase());
 
-
-        switch (expense.getSplitType()) {
-            case "EQUAL":
+        switch (splitType) {
+            case SplitType.EQUAL:
                 this.addExpenseForEqualSplitType(expense);
                 break;
-            case "EXACT":
+            case SplitType.EXACT:
                 this.addExpenseForExactSplitType(expense);
                 break;
-            case "PERCENT":
+            case SplitType.PERCENT:
                 this.addExpenseForPercentSplitType(expense);
                 break;
         }
